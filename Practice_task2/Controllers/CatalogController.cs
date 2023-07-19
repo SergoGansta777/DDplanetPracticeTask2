@@ -83,7 +83,7 @@ public class CatalogController : ControllerBase
         {
             return BadRequest(ModelState);
         }
-        if (!LocationExists(id))
+        if (!await LocationExists(id))
         {
             return NotFound("Location by id " + id + " not found");
         }
@@ -136,8 +136,8 @@ public class CatalogController : ControllerBase
         return Ok();
     }
 
-    private bool LocationExists(int id)
+    private async Task<bool> LocationExists(int id)
     {
-        return _Dbcontext.Locations.Any(e => e.Id == id);
+        return await _Dbcontext.Locations.AnyAsync(e => e.Id == id);
     }
 }
