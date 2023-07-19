@@ -1,4 +1,3 @@
-// Add the necessary using statements
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Practice_task2.Model;
@@ -6,13 +5,13 @@ using System.Text.RegularExpressions;
 
 [ApiController]
 [Route("api/locations")]
-public class CatalogController : ControllerBase
+public class LocationController : ControllerBase
 {
-    private readonly PracticeTask2Context _Dbcontext;
+    private readonly PracticeTask2Context _dbContext;
 
-    public CatalogController(PracticeTask2Context context)
+    public LocationController(PracticeTask2Context context)
     {
-        _Dbcontext = context;
+        _dbContext = context;
     }
 
     // GET: api/locations
@@ -21,7 +20,7 @@ public class CatalogController : ControllerBase
     {
         try
         {
-            var locations = await _Dbcontext.Locations.ToListAsync();
+            var locations = await _dbContext.Locations.ToListAsync();
             return Ok(locations);
         }
         catch (Exception)
@@ -36,7 +35,7 @@ public class CatalogController : ControllerBase
     {
         try
         {
-            var location = await _Dbcontext.Locations.FindAsync(id);
+            var location = await _dbContext.Locations.FindAsync(id);
             if (location == null)
             {
                 return NotFound("Location by id " + id + " not found");
@@ -57,11 +56,18 @@ public class CatalogController : ControllerBase
         {
             return BadRequest(ModelState);
         }
+        // Check if a location with the same managing company already exists
+        // var existingLocation = await _dbContext.Locations
+        //     .FirstOrDefaultAsync(l => l.ManagingCompany == location.ManagingCompany);
+        // if (existingLocation != null)
+        // {
+        //     return BadRequest("Location with the same managing company already exists");
+        // }
 
         try
         {
-            _Dbcontext.Locations.Add(location);
-            await _Dbcontext.SaveChangesAsync();
+            _dbContext.Locations.Add(location);
+            await _dbContext.SaveChangesAsync();
 
             return CreatedAtAction(nameof(GetLocation), new { id = location.Id }, location);
         }
@@ -88,10 +94,18 @@ public class CatalogController : ControllerBase
             return NotFound("Location by id " + id + " not found");
         }
 
+        // Check if a location with the same managing company exists
+        // var existingLocation = await _dbContext.Locations
+        //     .FirstOrDefaultAsync(l => l.ManagingCompany == location.ManagingCompany && l.Id != location.Id);
+        // if (existingLocation != null)
+        // {
+        //     return BadRequest("Location with the same managing company already exists");
+        // }
+
         try
         {
-            _Dbcontext.Entry(location).State = EntityState.Modified;
-            await _Dbcontext.SaveChangesAsync();
+            _dbContext.Entry(location).State = EntityState.Modified;
+            await _dbContext.SaveChangesAsync();
         }
         catch (Exception)
         {
@@ -104,7 +118,7 @@ public class CatalogController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteLocation(int id)
     {
-        var location = await _Dbcontext.Locations.FindAsync(id);
+        var location = await _dbContext.Locations.FindAsync(id);
         if (location == null)
         {
             return NotFound("Location by id " + id + " not found");
@@ -112,8 +126,8 @@ public class CatalogController : ControllerBase
 
         try
         {
-            _Dbcontext.Locations.Remove(location);
-            await _Dbcontext.SaveChangesAsync();
+            _dbContext.Locations.Remove(location);
+            await _dbContext.SaveChangesAsync();
         }
         catch (Exception)
         {
@@ -122,22 +136,8 @@ public class CatalogController : ControllerBase
         return NoContent();
     }
 
-    // POST: api/locations/{id}/addresses
-    [HttpPost("{id}/addresses")]
-    public async Task<IActionResult> AddAddressToLocation(int id, AddressInLocation address)
-    {
-        return Ok();
-    }
-
-    // DELETE: api/locations/{locationId}/addresses/{addressId}
-    [HttpDelete("{locationId}/addresses/{addressId}")]
-    public async Task<IActionResult> RemoveAddressFromLocation(int locationId, int addressId)
-    {
-        return Ok();
-    }
-
     private async Task<bool> LocationExists(int id)
     {
-        return await _Dbcontext.Locations.AnyAsync(e => e.Id == id);
+        return await _dbContext.Locations.AnyAsync(e => e.Id == id);
     }
 }
