@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Practice_task2.Model;
 
@@ -13,6 +12,7 @@ public partial class AddressInLocation
 
     public string? FiasRegionCode { get; set; }
 
+    [Required(ErrorMessage = "Location Id is required")]
     public int? LocationId { get; set; }
 
     //public virtual Location? Location { get; set; }

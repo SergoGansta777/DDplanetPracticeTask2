@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Practice_task2.Model;
-using System.Linq.Expressions;
-using System.Text.RegularExpressions;
 
 [ApiController]
 [Route("api/addressinlocations")]
@@ -52,6 +50,7 @@ public class AddressInLocationController : ControllerBase
         }
     }
 
+    // POST: api/addressinlocation
     [HttpPost]
     public async Task<ActionResult<AddressInLocation>> AddAddressToLocation(
         AddressInLocation addressInLocation
@@ -79,6 +78,7 @@ public class AddressInLocationController : ControllerBase
         }
     }
 
+    // DELETE: api/addressinlocation/{id}
     [HttpDelete("{id}")]
     public async Task<IActionResult> RemoveAddressFromLocation(int id)
     {
@@ -98,6 +98,26 @@ public class AddressInLocationController : ControllerBase
             return StatusCode(500, "An error occurred while removing address from location");
         }
         return NoContent();
+    }
+
+    private bool IsAddressInLocationComplete(AddressInLocation addressInLocation)
+    {
+        var isFiasHouseCodeExists = string.IsNullOrWhiteSpace(addressInLocation.FiasHouseCode);
+        var isFiasStreetCodeExists = string.IsNullOrWhiteSpace(addressInLocation.FiasStreetCode);
+        var isFiasCityCodeExists = string.IsNullOrWhiteSpace(addressInLocation.FiasCityCode);
+        var isFiasRegionCodeExists = string.IsNullOrWhiteSpace(addressInLocation.FiasRegionCode);
+
+        var isFiasStreetCodeMissedButRequired =
+            isFiasHouseCodeExists && !isFiasStreetCodeExists && isFiasCityCodeExists;
+        var isFiasCityCodeMissedButRequired =
+            isFiasStreetCodeExists && !isFiasCityCodeExists && isFiasRegionCodeExists;
+        var isFiasRegionCodeMissedButRequired = isFiasCityCodeExists && !isFiasRegionCodeExists;
+
+        var isSomethingMissed =
+            isFiasStreetCodeMissedButRequired
+            || isFiasCityCodeMissedButRequired
+            || isFiasRegionCodeMissedButRequired;
+        return isSomethingMissed;
     }
 
     private async Task<bool> AddressInLocationExists(int id)
