@@ -60,6 +60,32 @@ public class AddressInLocationController : ControllerBase
         {
             return BadRequest(ModelState);
         }
+        if (!IsAddressInLocationComplete(addressInLocation))
+        {
+            return BadRequest("Address in location is not complete");
+        }
+
+        bool isLocationOverlapping = await _dbContext.AddressInLocations
+            .Join(
+                _dbContext.Locations,
+                ail => ail.LocationId,
+                l => l.Id,
+                (ail, l) => new { AddressInLocation = ail, Location = l }
+            )
+            .AnyAsync(
+                x =>
+                    x.AddressInLocation.FiasRegionCode == addressInLocation.FiasRegionCode
+                    && (
+                        x.AddressInLocation.FiasHouseCode == addressInLocation.FiasHouseCode
+                        || x.AddressInLocation.FiasStreetCode == addressInLocation.FiasStreetCode
+                        || x.AddressInLocation.FiasCityCode == addressInLocation.FiasCityCode
+                    )
+            );
+
+        if (isLocationOverlapping)
+        {
+            return BadRequest("Address in location for current managing company is overlapping");
+        }
 
         try
         {
@@ -102,10 +128,10 @@ public class AddressInLocationController : ControllerBase
 
     private bool IsAddressInLocationComplete(AddressInLocation addressInLocation)
     {
-        var isFiasHouseCodeExists = string.IsNullOrWhiteSpace(addressInLocation.FiasHouseCode);
-        var isFiasStreetCodeExists = string.IsNullOrWhiteSpace(addressInLocation.FiasStreetCode);
-        var isFiasCityCodeExists = string.IsNullOrWhiteSpace(addressInLocation.FiasCityCode);
-        var isFiasRegionCodeExists = string.IsNullOrWhiteSpace(addressInLocation.FiasRegionCode);
+        var isFiasHouseCodeExists = !string.IsNullOrWhiteSpace(addressInLocation.FiasHouseCode);
+        var isFiasStreetCodeExists = !string.IsNullOrWhiteSpace(addressInLocation.FiasStreetCode);
+        var isFiasCityCodeExists = !string.IsNullOrWhiteSpace(addressInLocation.FiasCityCode);
+        var isFiasRegionCodeExists = !string.IsNullOrWhiteSpace(addressInLocation.FiasRegionCode);
 
         var isFiasStreetCodeMissedButRequired =
             isFiasHouseCodeExists && !isFiasStreetCodeExists && isFiasCityCodeExists;
@@ -117,10 +143,11 @@ public class AddressInLocationController : ControllerBase
             isFiasStreetCodeMissedButRequired
             || isFiasCityCodeMissedButRequired
             || isFiasRegionCodeMissedButRequired;
-        return isSomethingMissed;
+
+        return !isSomethingMissed;
     }
 
-    private async Task<bool> AddressInLocationExists(int id)
+    protected async Task<bool> AddressInLocationExists(int id)
     {
         return await _dbContext.AddressInLocations.AnyAsync(e => e.LocationId == id);
     }

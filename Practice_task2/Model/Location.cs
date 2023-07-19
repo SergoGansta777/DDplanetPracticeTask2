@@ -12,5 +12,5 @@ public partial class Location
     [Required(ErrorMessage = "Management company id is required")]
     public int? ManagementCompanyId { get; set; }
 
-    public virtual ManagementCompany? ManagementCompany { get; set; }
+    //public virtual ManagementCompany? ManagementCompany { get; set; }
 }
