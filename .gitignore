@@ -10,7 +10,8 @@ autom4te.cache/
 *.tar.gz
 tarballs/
 test-results/
-RestfullWeb/.vscode/
+.vscode/
+Practice_task2/.vscode/
 
 # Mac bundle stuff
 *.dmg
