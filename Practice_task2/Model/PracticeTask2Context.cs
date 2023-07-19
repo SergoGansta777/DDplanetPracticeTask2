@@ -35,12 +35,12 @@ public partial class PracticeTask2Context : DbContext
                 .HasColumnName("fias_street_code");
             entity.Property(e => e.LocationId).HasColumnName("location_id");
 
-            entity
-                .HasOne(d => d.Location)
-                .WithMany()
-                .HasForeignKey(d => d.LocationId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("address_in_location_location_id_fkey");
+            // entity
+            //     .HasOne(d => d.Location)
+            //     .WithMany()
+            //     .HasForeignKey(d => d.LocationId)
+            //     .OnDelete(DeleteBehavior.Cascade)
+            //     .HasConstraintName("address_in_location_location_id_fkey");
         });
 
         modelBuilder.Entity<Location>(entity =>
@@ -53,12 +53,12 @@ public partial class PracticeTask2Context : DbContext
             entity.Property(e => e.ManagementCompanyId).HasColumnName("management_company_id");
             entity.Property(e => e.Name).HasMaxLength(255).HasColumnName("name");
 
-            entity
-                .HasOne(d => d.ManagementCompany)
-                .WithMany(p => p.Locations)
-                .HasForeignKey(d => d.ManagementCompanyId)
-                .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("location_management_company_id_fkey");
+            // entity
+            //     .HasOne(d => d.ManagementCompany)
+            //     .WithMany(p => p.Locations)
+            //     .HasForeignKey(d => d.ManagementCompanyId)
+            //     .OnDelete(DeleteBehavior.Cascade)
+            //     .HasConstraintName("location_management_company_id_fkey");
         });
 
         modelBuilder.Entity<ManagementCompany>(entity =>
