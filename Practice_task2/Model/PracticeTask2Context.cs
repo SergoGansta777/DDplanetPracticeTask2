@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿
 using Microsoft.EntityFrameworkCore;
 
 namespace Practice_task2.Model;
@@ -21,8 +20,11 @@ public partial class PracticeTask2Context : DbContext
     {
         modelBuilder.Entity<AddressInLocation>(entity =>
         {
-            entity.HasNoKey().ToTable("address_in_location");
+            entity.HasKey(e => e.Id).HasName("address_in_location_pkey");
 
+            entity.ToTable("address_in_location");
+
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.FiasCityCode).HasMaxLength(3).HasColumnName("fias_city_code");
             entity.Property(e => e.FiasHouseCode).HasMaxLength(4).HasColumnName("fias_house_code");
             entity
@@ -35,9 +37,7 @@ public partial class PracticeTask2Context : DbContext
                 .HasColumnName("fias_street_code");
             entity.Property(e => e.LocationId).HasColumnName("location_id");
 
-            // entity
-            //     .HasOne(d => d.Location)
-            //     .WithMany()
+            // entity.HasOne(d => d.Location).WithMany(p => p.AddressInLocations)
             //     .HasForeignKey(d => d.LocationId)
             //     .OnDelete(DeleteBehavior.Cascade)
             //     .HasConstraintName("address_in_location_location_id_fkey");
@@ -53,9 +53,7 @@ public partial class PracticeTask2Context : DbContext
             entity.Property(e => e.ManagementCompanyId).HasColumnName("management_company_id");
             entity.Property(e => e.Name).HasMaxLength(255).HasColumnName("name");
 
-            // entity
-            //     .HasOne(d => d.ManagementCompany)
-            //     .WithMany(p => p.Locations)
+            // entity.HasOne(d => d.ManagementCompany).WithMany(p => p.Locations)
             //     .HasForeignKey(d => d.ManagementCompanyId)
             //     .OnDelete(DeleteBehavior.Cascade)
             //     .HasConstraintName("location_management_company_id_fkey");

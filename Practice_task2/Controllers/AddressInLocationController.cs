@@ -22,8 +22,9 @@ public class AddressInLocationController : ControllerBase
             var addressInLocations = await _dbContext.AddressInLocations.ToListAsync();
             return Ok(addressInLocations);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Console.WriteLine(ex);
             return StatusCode(500, "An error occurred while retrieving address in locations");
         }
     }
@@ -93,8 +94,8 @@ public class AddressInLocationController : ControllerBase
             await _dbContext.SaveChangesAsync();
 
             return CreatedAtAction(
-                nameof(GetAddressInLocation),
-                new { id = addressInLocation.LocationId },
+                nameof(GetAddressInLocations),
+                new { id = addressInLocation.Id },
                 addressInLocation
             );
         }
@@ -145,10 +146,5 @@ public class AddressInLocationController : ControllerBase
             || isFiasRegionCodeMissedButRequired;
 
         return !isSomethingMissed;
-    }
-
-    protected async Task<bool> AddressInLocationExists(int id)
-    {
-        return await _dbContext.AddressInLocations.AnyAsync(e => e.LocationId == id);
     }
 }
