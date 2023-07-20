@@ -79,6 +79,7 @@ CREATE TABLE location (
 
 -- Создание таблицы адресов в локации
 CREATE TABLE address_in_location (
+    id SERIAL PRIMARY KEY,
     fias_house_code VARCHAR(4) ,
     fias_street_code VARCHAR(4),
     fias_city_code VARCHAR(3) ,
